@@ -20,6 +20,36 @@ defmodule DoodlexWeb.CoreComponents do
   import DoodlexWeb.Gettext
 
   @doc """
+  Renders markdown
+
+  ## Examples
+
+      <.markdown md="### header">
+
+  """
+  attr :md, :string, required: false
+  attr :file, :string, required: false
+  def markdown(%{md: md} = assigns) do
+    {:ok, yeet, _} = Earmark.as_html(md)
+    assigns = assign(assigns, :md, Phoenix.HTML.raw(yeet))
+
+    ~H"""
+      <div><%= @md %></div>
+    """
+  end
+
+
+  def markdown(%{file: file} = assigns) do
+    {:ok, md} = File.read(file)
+    {:ok, yeet, _} = Earmark.as_html(md, escape: false)
+    assigns = assign(assigns, :md, Phoenix.HTML.raw(yeet))
+
+    ~H"""
+      <div><%= @md %></div>
+    """
+  end
+
+  @doc """
   Renders a modal.
 
   ## Examples

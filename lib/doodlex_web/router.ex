@@ -1,13 +1,25 @@
 defmodule DoodlexWeb.Router do
   use DoodlexWeb, :router
 
-  pipeline :browser do
+  import DoodlexWeb.UserAuth
+
+  pipeline :phx_default do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, html: {DoodlexWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
+  end
+
+  pipeline :base do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -15,9 +27,10 @@ defmodule DoodlexWeb.Router do
   end
 
   scope "/", DoodlexWeb do
-    pipe_through :browser
+    pipe_through :base
 
-    get "/", PageController, :home
+    get "/", HomeController, :home
+    get "/resume", ResumeController, :index
     live "/thermostat", ThermostatLive
   end
 
@@ -36,10 +49,48 @@ defmodule DoodlexWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through :phx_default
 
       live_dashboard "/dashboard", metrics: DoodlexWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
+  ## Authentication routes
+
+  scope "/", DoodlexWeb do
+    pipe_through [:phx_default, :redirect_if_user_is_authenticated]
+
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{DoodlexWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/users/register", UserRegistrationLive, :new
+      live "/users/log_in", UserLoginLive, :new
+      live "/users/reset_password", UserForgotPasswordLive, :new
+      live "/users/reset_password/:token", UserResetPasswordLive, :edit
+    end
+
+    post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/", DoodlexWeb do
+    pipe_through [:phx_default, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [{DoodlexWeb.UserAuth, :ensure_authenticated}] do
+      live "/users/settings", UserSettingsLive, :edit
+      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+    end
+  end
+
+  scope "/", DoodlexWeb do
+    pipe_through [:phx_default]
+
+    delete "/users/log_out", UserSessionController, :delete
+
+    live_session :current_user,
+      on_mount: [{DoodlexWeb.UserAuth, :mount_current_user}] do
+      live "/users/confirm/:token", UserConfirmationLive, :edit
+      live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
   end
 end
