@@ -9,3 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias Doodlex.Accounts
+
+Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: "asdfasdfasdf"})
+Accounts.register_user(%{email: "yeet@gmail.com", password: "asdfasdfasdf"})
+Accounts.register_user(%{email: "skeet@gmail.com", password: "asdfasdfasdf"})

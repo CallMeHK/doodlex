@@ -80,6 +80,25 @@ defmodule Doodlex.Accounts do
     |> Repo.insert()
   end
 
+  ## Super user registration
+
+  @doc """
+  Registers a super user.
+
+  ## Examples
+
+      iex> register_super_user(%{field: value})
+      {:ok, %User{}}
+
+      iex> register_super_user(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def register_super_user(attrs) do
+    %User{}
+    |> User.super_user_registration_changeset(Map.put(attrs, :super_user, true))
+    |> Repo.insert()
+  end
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 

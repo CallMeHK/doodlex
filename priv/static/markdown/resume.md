@@ -1,7 +1,7 @@
 ### Resume
 
 <p>
-<a href="https://beer.tylergregg.me/api/files/69990rtr1z388tx/px83rxl4twapvkx/resume_tyler_gregg_03_10_2023_UVlTgQ6PQS.pdf" download="resume_tyler_gregg_03_10_2023.pdf">Download very official PDF resume here</a>
+<a href="./markdown/resume.pdf" download="resume_tyler_gregg.pdf">Download very official PDF resume here</a>
 </p>
 
 Tyler Gregg is a frontend leaning full stack engineer with a passion for quality, automation, and creating business value. Experience in multiple organizations decomposing monolithic projects has helped him to hone skills useful in both legacy and modern applications. Tyler has skills across the entire stack, but a few set him apart:
@@ -24,7 +24,7 @@ Tyler Gregg is a frontend leaning full stack engineer with a passion for quality
 
 #### Experience
 
-##### Bill.com — Senior Software Engineer
+##### Bill.com — Staff Software Engineer
 MARCH  2021 - PRESENT
   - Built integration microservices to help accountants onboard new customers, using React, Typescript, GraphQL, gRPC, Kafka, and Elixir.
  - Moved to the architecture team, upgraded FE  monorepo from Webpack 4 to 5 and started moving select services out of monorepo.
@@ -60,5 +60,6 @@ BS in Mathematics — May 2015
 #### Links
  - [linkedin](https://www.linkedin.com/in/tyler-gregg-803317103/)
  - [GitHub](https://github.com/CallMeHK)
- - <a href="https://beer.tylergregg.me/api/files/69990rtr1z388tx/px83rxl4twapvkx/resume_tyler_gregg_03_10_2023_UVlTgQ6PQS.pdf" download="resume_tyler_gregg_03_10_2023.pdf">PDF Resume</a>
- - tyler.gregg.ma@gmail.com
+ - <a href="./markdown/resume.pdf" download="resume_tyler_gregg.pdf">PDF Resume</a>
+ - <a href=#>tyler.gregg.ma@gmail.com</a>
+

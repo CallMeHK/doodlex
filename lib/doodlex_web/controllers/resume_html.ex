@@ -4,7 +4,7 @@ defmodule DoodlexWeb.ResumeHTML do
   def index(assigns) do
     ~H"""
     <main class="container">
-      <.markdown file="markdown/resume.md" />
+      <.markdown file="resume.md" />
     </main>
     """
   end

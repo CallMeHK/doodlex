@@ -6,6 +6,7 @@ defmodule Doodlex.Accounts.User do
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
+    field :super_user, :boolean
     field :confirmed_at, :naive_datetime
 
     timestamps(type: :utc_datetime)
@@ -37,6 +38,13 @@ defmodule Doodlex.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password])
+    |> validate_email(opts)
+    |> validate_password(opts)
+  end
+
+  def super_user_registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :password, :super_user])
     |> validate_email(opts)
     |> validate_password(opts)
   end

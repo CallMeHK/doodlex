@@ -86,6 +86,7 @@ defmodule DoodlexWeb.Router do
     pipe_through [:phx_default]
 
     delete "/users/log_out", UserSessionController, :delete
+    get "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,
       on_mount: [{DoodlexWeb.UserAuth, :mount_current_user}] do

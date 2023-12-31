@@ -11,7 +11,8 @@
     <DoodlexWeb.Layouts.dark />
   </head>
   <body>
-    <DoodlexWeb.Layouts.top_nav />
+    <%= IO.puts("------- base.html --------"); IO.inspect(assigns); nil %>
+    <.top_nav current_user={@current_user}/>
     <%= @inner_content %>
   </body>
 </html>

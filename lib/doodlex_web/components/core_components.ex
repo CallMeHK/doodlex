@@ -20,6 +20,75 @@ defmodule DoodlexWeb.CoreComponents do
   import DoodlexWeb.Gettext
 
   @doc """
+  Renders top nav, with optional user menu. requires current user to work.
+
+  ## Examples
+
+      <.top_nav current_user={assigns[:current_user]} />
+
+  """
+  attr :current_user, :string, required: false
+  def top_nav(assigns) do
+    ~H"""
+      <nav class="container-fluid">
+         <ul>
+            <li><a href="./" class="contrast"><img src="/images/beer-mug-icon.svg" style="height: 22px; margin-right: 8px; margin-bottom: 5px;"><strong>beer.tylergregg</strong></a></li>
+         </ul>
+
+         <%= if assigns[:current_user] do %>
+         <ul id="nav-menu">
+            <li>
+               <details role="list" dir="rtl">
+                  <summary aria-haspopup="listbox" role="link" class="secondary">Menu</summary>
+                  <ul role="listbox">
+                     <li>
+                      <a href="/users/settings">Settings</a>
+                     </li>
+                     <li>
+                      <a href="/users/log_out">Log out</a>
+                     </li>
+                  </ul>
+               </details>
+            </li>
+         </ul>
+
+         <% else %>
+         <script>
+         const handler = (e) => {
+           if (e?.code === 'KeyM' && e?.ctrlKey) {
+            console.log('opening menu...')
+            document.removeEventListener("keydown", handler)
+            const menu = document.querySelector('#nav-menu')
+            menu.hidden = false
+           }
+         }
+          document.addEventListener("keydown", handler)
+         </script>
+         <ul id="nav-menu" hidden>
+            <li>
+               <details role="list" dir="rtl">
+                  <summary aria-haspopup="listbox" role="link" class="secondary">Menu</summary>
+                  <ul role="listbox">
+                     <li>
+                      <a href="/users/log_in">Log in</a>
+                     </li>
+                     <li>
+                      <a href="/users/settings">Settings</a>
+                     </li>
+                     <li>
+                      <a href="/users/log_out">Log out</a>
+                     </li>
+                  </ul>
+               </details>
+            </li>
+         </ul>
+
+         <% end %>
+      </nav>
+    """
+  end
+
+  @doc """
   Renders markdown
 
   ## Examples
@@ -39,8 +108,9 @@ defmodule DoodlexWeb.CoreComponents do
   end
 
 
+  # path relative to priv/static/markdown/ folder
   def markdown(%{file: file} = assigns) do
-    {:ok, md} = File.read(file)
+    {:ok, md} = File.read("priv/static/markdown/#{file}")
     {:ok, yeet, _} = Earmark.as_html(md, escape: false)
     assigns = assign(assigns, :md, Phoenix.HTML.raw(yeet))
 

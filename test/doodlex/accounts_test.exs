@@ -92,6 +92,23 @@ defmodule Doodlex.AccountsTest do
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
     end
+
+    test "registers users without :super_user" do
+      email = unique_user_email()
+      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email, super_user: true))
+      assert user.email == email
+      assert is_nil(user.super_user)
+    end
+  end
+
+
+  describe "register_super_user/1" do
+    test "registers users without :super_user" do
+      email = unique_user_email()
+      {:ok, user} = Accounts.register_super_user(valid_user_attributes(email: email))
+      assert user.email == email
+      assert user.super_user
+    end
   end
 
   describe "change_user_registration/2" do
