@@ -14,7 +14,7 @@ defmodule DoodlexWeb.UserAuthTest do
       |> Map.replace!(:secret_key_base, DoodlexWeb.Endpoint.config(:secret_key_base))
       |> init_test_session(%{})
 
-    %{user: user_fixture(), conn: conn}
+    %{user: user_fixture(), super_user: super_user_fixture(), conn: conn}
   end
 
   describe "log_in_user/3" do
@@ -265,6 +265,30 @@ defmodule DoodlexWeb.UserAuthTest do
 
     test "does not redirect if user is authenticated", %{conn: conn, user: user} do
       conn = conn |> assign(:current_user, user) |> UserAuth.require_authenticated_user([])
+      refute conn.halted
+      refute conn.status
+    end
+  end
+
+  describe "require_super_user/2" do
+    test "redirects if user is not authenticated", %{conn: conn} do
+      conn = conn |> fetch_flash() |> UserAuth.require_super_user([])
+      assert conn.halted
+
+      assert redirected_to(conn) == ~p"/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You dont have access to this page."
+    end
+
+    test "redirect if user is authenticated but not super", %{conn: conn, user: user} do
+      conn = conn |> fetch_flash() |> assign(:current_user, user) |> UserAuth.require_super_user([])
+      assert conn.halted
+      assert conn.status
+    end
+
+    test "does not redirect if user is authenticated and super", %{conn: conn, super_user: super_user} do
+      conn = conn |> assign(:current_user, super_user) |> UserAuth.require_super_user([])
       refute conn.halted
       refute conn.status
     end

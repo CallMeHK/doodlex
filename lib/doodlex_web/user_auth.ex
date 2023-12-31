@@ -211,6 +211,23 @@ defmodule DoodlexWeb.UserAuth do
     end
   end
 
+  @doc """
+  Used for routes that require the user to be authenticated and 
+  have the super_user: true property
+  """
+  def require_super_user(conn, _opts) do
+    maybe_current_user = conn.assigns[:current_user]
+    if maybe_current_user && Map.get(maybe_current_user, :super_user) do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You dont have access to this page.")
+      |> maybe_store_return_to()
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
   defp put_token_in_session(conn, token) do
     conn
     |> put_session(:user_token, token)

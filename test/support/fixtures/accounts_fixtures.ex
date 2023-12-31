@@ -23,6 +23,15 @@ defmodule Doodlex.AccountsFixtures do
     user
   end
 
+  def super_user_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> valid_user_attributes()
+      |> Doodlex.Accounts.register_super_user()
+
+    user
+  end
+
   def extract_user_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")

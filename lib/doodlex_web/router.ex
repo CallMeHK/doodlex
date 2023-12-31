@@ -31,7 +31,6 @@ defmodule DoodlexWeb.Router do
 
     get "/", HomeController, :home
     get "/resume", ResumeController, :index
-    live "/thermostat", ThermostatLive
   end
 
   # Other scopes may use custom stacks.
@@ -46,12 +45,12 @@ defmodule DoodlexWeb.Router do
     # If your application does not have an admins-only section yet,
     # you can use Plug.BasicAuth to set up some basic authentication
     # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
+    # import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
       pipe_through :phx_default
 
-      live_dashboard "/dashboard", metrics: DoodlexWeb.Telemetry
+      # live_dashboard "/dashboard", metrics: DoodlexWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
@@ -80,6 +79,15 @@ defmodule DoodlexWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
+  end
+
+  scope "/", DoodlexWeb do
+    pipe_through [:phx_default, :require_super_user]
+
+    import Phoenix.LiveDashboard.Router
+
+    live_dashboard "/dashboard", metrics: DoodlexWeb.Telemetry
+    live "/thermostat", ThermostatLive
   end
 
   scope "/", DoodlexWeb do
