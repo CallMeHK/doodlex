@@ -12,6 +12,6 @@
 
 alias Doodlex.Accounts
 
-Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: "asdfasdfasdf"})
-Accounts.register_user(%{email: "yeet@gmail.com", password: "asdfasdfasdf"})
-Accounts.register_user(%{email: "skeet@gmail.com", password: "asdfasdfasdf"})
+Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: System.get_env("SU_PW")})
+Accounts.register_user(%{email: "yeet@gmail.com", password: System.get_env("USER_PW")})
+Accounts.register_user(%{email: "skeet@gmail.com", password: System.get_env("USER_PW")})

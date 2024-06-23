@@ -53,7 +53,7 @@ defmodule Doodlex.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:earmark, "~> 1.4"},
+      {:earmark, "~> 1.4"}
     ]
   end
 
