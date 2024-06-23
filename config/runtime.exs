@@ -22,7 +22,8 @@ end
 
 if config_env() == :prod do
   database_path =
-    System.get_env("DATABASE_PATH") ||
+    System.get_env("DATABASE_PATH") || 
+      Path.expand("../doodlex.db", Path.dirname(__ENV__.file)) ||
       raise """
       environment variable DATABASE_PATH is missing.
       For example: /etc/doodlex/doodlex.db
