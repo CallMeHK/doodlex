@@ -22,6 +22,14 @@ defmodule DoodlexWeb.Router do
     plug :fetch_current_user
   end
 
+  pipeline :base_layout do
+    plug :put_root_layout, html: {DoodlexWeb.Layouts, :base}
+  end
+
+  pipeline :base_layout_light do
+    plug :put_root_layout, html: {DoodlexWeb.Layouts, :base_light}
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -58,10 +66,20 @@ defmodule DoodlexWeb.Router do
   ## Authentication routes
 
   scope "/", DoodlexWeb do
+    pipe_through [:base, :base_layout_light] 
+
+    live "/party-tracker", PartyTrackerLive
+    live "/party-tracker/create-character", PartyTracker.CreateCharacterLive
+    live "/party-tracker/create-session", PartyTrackerLive
+    live "/party-tracker/join-session", PartyTrackerLive
+    live "/party-tracker/session", PartyTrackerLive
+  end
+
+  scope "/", DoodlexWeb do
     pipe_through [:phx_default, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
-      on_mount: [{DoodlexWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      on_mount: [{DodlexWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       # live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new

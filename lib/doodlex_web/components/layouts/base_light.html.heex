@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,11 +7,13 @@
     <.live_title suffix=" · Phoenix Framework">
       <%= assigns[:page_title] || "Doodlex" %>
     </.live_title>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <DoodlexWeb.Layouts.dark />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/utilities.css"} />
   </head>
   <body>
-    <.top_nav current_user={@current_user} logo={~p"/images/beer-mug-icon.svg"}/>
+    <.top_nav current_user={@current_user} logo={~p"/images/beer-mug-icon.svg"} title={"party tracker"} href={"/party-tracker"}/>
+    <div style="width:100%; height:1px; background-color:#00000030"></div>
     <%= @inner_content %>
   </body>
 </html>

@@ -53,6 +53,17 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :tailwind,
+  version: "3.3.2",
+  default: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/utilities.css
+      --output=../priv/static/assets/utilities.css
+    ),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

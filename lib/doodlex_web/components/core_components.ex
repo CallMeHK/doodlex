@@ -28,11 +28,18 @@ defmodule DoodlexWeb.CoreComponents do
 
   """
   attr :current_user, :string, required: false
+  attr :logo, :string, required: true # use a ~p string if its an asset
+  attr :title, :string, required: false 
+  attr :href, :string, required: false
   def top_nav(assigns) do
     ~H"""
       <nav class="container-fluid">
          <ul>
-            <li><a href="./" class="contrast"><img src="/images/beer-mug-icon.svg" style="height: 22px; margin-right: 8px; margin-bottom: 5px;"><strong>beer.tylergregg</strong></a></li>
+            <li>
+               <a href={assigns[:href] || "./"} class="contrast"><img src={assigns[:logo]} style="height: 22px; margin-right: 8px; margin-bottom: 5px;">
+                  <strong><%= assigns[:title] || "beer.tylergregg" %></strong>
+               </a>
+            </li>
          </ul>
 
          <%= if assigns[:current_user] do %>
