@@ -114,7 +114,6 @@ defmodule DoodlexWeb.CoreComponents do
     """
   end
 
-
   # path relative to priv/static/markdown/ folder
   def markdown(%{file: file} = assigns) do
     {:ok, md} = File.read("priv/static/markdown/#{file}")
@@ -123,6 +122,22 @@ defmodule DoodlexWeb.CoreComponents do
 
     ~H"""
       <div><%= @md %></div>
+    """
+  end
+
+  @doc """
+  Renders input for form
+
+  ## Examples
+
+      <.input type="email" field={@form[:email]} />
+
+  """
+  attr :field, Phoenix.HTML.FormField
+  attr :rest, :global, include: ~w(type)
+  def finput(assigns) do
+    ~H"""
+    <input id={@field.id} name={@field.name} value={@field.value} {@rest} />
     """
   end
 

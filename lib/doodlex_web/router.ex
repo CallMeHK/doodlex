@@ -70,6 +70,7 @@ defmodule DoodlexWeb.Router do
 
     live "/party-tracker", PartyTrackerLive
     live "/party-tracker/create-character", PartyTracker.CreateCharacterLive
+    live "/party-tracker/character/:id", PartyTracker.ViewCharacterLive
     live "/party-tracker/create-session", PartyTrackerLive
     live "/party-tracker/join-session", PartyTrackerLive
     live "/party-tracker/session", PartyTrackerLive
@@ -79,7 +80,7 @@ defmodule DoodlexWeb.Router do
     pipe_through [:phx_default, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
-      on_mount: [{DodlexWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      on_mount: [{DoodlexWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       # live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
