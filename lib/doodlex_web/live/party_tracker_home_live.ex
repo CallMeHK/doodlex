@@ -12,7 +12,7 @@ defmodule DoodlexWeb.PartyTrackerLive do
               <p><a href="/party-tracker/create-character">Create a character</a></p>
               <p><a href="/party-tracker/create-session">Create a session</a></p>
               <p><a href="/party-tracker/join-session">Join a session</a></p>
-              <p><a href="/party-tracker/session">Temp Session</a></p>
+              <p><a href="/party-tracker/session/all">All Sessions</a></p>
             </div>
          </section>
       </main>

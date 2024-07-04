@@ -69,11 +69,12 @@ defmodule DoodlexWeb.Router do
     pipe_through [:base, :base_layout_light] 
 
     live "/party-tracker", PartyTrackerLive
-    live "/party-tracker/create-character", PartyTracker.CreateCharacterLive
-    live "/party-tracker/character/:id", PartyTracker.ViewCharacterLive
-    live "/party-tracker/create-session", PartyTrackerLive
-    live "/party-tracker/join-session", PartyTrackerLive
-    live "/party-tracker/session", PartyTrackerLive
+    live "/party-tracker/session/create", PartyTracker.CreateSessionLive
+    live "/party-tracker/session/join", PartyTrackerLive
+    live "/party-tracker/session/all", PartyTracker.AllSessionsLive
+    live "/party-tracker/session/:session_id", PartyTracker.SessionLive
+    live "/party-tracker/session/:session_id/character/create", PartyTracker.CreateCharacterLive
+    live "/party-tracker/session/:session_id/character/:id", PartyTracker.ViewCharacterLive
   end
 
   scope "/", DoodlexWeb do

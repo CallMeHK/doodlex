@@ -12,20 +12,31 @@ defmodule Doodlex.PartyTracker.Components.Healthbar do
         hp_bar_width = if ok?, do: Float.to_string(100 * result / assigns.max_hp), else: "100"
         {current_hp, hp_bar_width}   
     end
-    
+
+    bar_width = "width: calc(#{hp_bar_width}% - 10px);"
+    bar_color = cond do 
+      100 * current_hp / assigns.max_hp > 40 -> 
+        "background: #44cc57;" 
+      100 * current_hp / assigns.max_hp > 20 -> 
+        "background: #c0ac2e;" 
+      true -> 
+        "background: #c54;" 
+    end 
+
+    hp_text = "#{current_hp} / #{assigns.max_hp}"
+
     ~H"""
     <div>
       <div>
         <style>
           @scope {
             :scope {
-              <%= "--hp-bar-width: calc(#{hp_bar_width}% - 10px);" %>
               .health-bar {
                 -webkit-box-sizing: border-box;
                 -moz-box-sizing: border-box;
                 box-sizing: border-box;
                 width: 100%;
-                height: 50px;
+                height: 75px;
                 padding: 5px;
                 background: #ddd;
                 -webkit-border-radius: 5px;
@@ -34,16 +45,9 @@ defmodule Doodlex.PartyTracker.Components.Healthbar do
                 position: relative;
               }
               .bar {
-                <%= cond do %>
-                  <%= 100 * current_hp/@max_hp > 40 -> %>
-                    <%= "background: #44cc57;" %>
-                  <%= 100 * current_hp/@max_hp > 20 -> %>
-                    <%= "background: #d1d72c;" %>
-                  <%= true -> %>
-                    <%= "background: #c54;" %>
-                <% end %>
-                <%= "width: calc(#{hp_bar_width}% - 10px);" %>
-                height: 40px;
+                <%= bar_color %>
+                <%= bar_width %>
+                height: 65px;
                 position: absolute;
                 top: 5px;
                 left: 5px;
@@ -54,8 +58,8 @@ defmodule Doodlex.PartyTracker.Components.Healthbar do
               }
               .hit {
                 background: #cca49f;
-                <%= "width: calc(#{hp_bar_width}% - 10px);" %>
-                height: 40px;
+                <%= bar_width %>
+                height: 65px;
                 position: absolute;
                 top: 5px;
                 left: 5px;
@@ -64,19 +68,23 @@ defmodule Doodlex.PartyTracker.Components.Healthbar do
                 
                 transition: width .5s ease-in-out .5s;
               }
+              .hp {
+                position: absolute;
+                top: 5px;
+                right: 10px;
+                bottom: 0;
+                z-index: 30;
+                font-weight: bold;
+                font-size: 40px;
+              }
             }
           }
         </style>
         <div class="health-bar">
           <div id={"#{@id}-bar"} class="bar"></div>
           <div id={"#{@id}-hit"} class="hit"></div>
+          <div id={"#{@id}-hp"} class="hp"><%= hp_text %></div>
         </div>
-        <script>
-        setTimeout(() => {
-          document.getElementById("<%= "#{@id}-bar" %>").setAttribute('class', 'bar')
-          document.getElementById("<%= "#{@id}-hit" %>").setAttribute('class', 'hit')
-        }, 1000)
-        </script>
       </div>
     </div>
     """

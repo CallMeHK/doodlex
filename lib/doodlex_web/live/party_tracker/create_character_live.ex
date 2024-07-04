@@ -4,6 +4,7 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
   use Phoenix.LiveView
   import DoodlexWeb.CoreComponents
   alias Doodlex.PartyTracker.Character
+  alias Doodlex.PartyTracker.Session
 
   def render(assigns) do
     ~H"""
@@ -80,13 +81,6 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
                   type="submit"
                   value="Create Character"
                 />
-                
-                <!-- <script>
-                document.querySelector("#character_form_submit").addEventListener("click", () => {
-                  document.querySelector("#character_form_submit").disabled = true
-                  setTimeout(() => { document.querySelector("#character_form_submit").disabled = false }, 1500 )
-                })
-                </script> -->
               </.form>
             </div>
          </section>
@@ -139,12 +133,20 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
     assign(socket, :form, to_form(changeset))
   end
 
-  def mount(_params, _session, socket) do
-    {:ok, 
-      socket
-      |> assign(:errors, {:no_submit, ""})
-      |> assign_form(CharacterForm.changeset(%CharacterForm{}))
-    }
+  def mount(params, _session, socket) do
+    maybe_id = Map.get(params, "session_id")
+
+    case Session.get(maybe_id) do
+      %Session{id: id} ->
+        {:ok, 
+          socket
+          |> assign(:errors, {:no_submit, ""})
+          |> assign(:session_id, id)
+          |> assign_form(CharacterForm.changeset(%CharacterForm{}))
+        }
+      _ -> 
+        {:noreply, redirect(socket, to: "/party-tracker")}
+    end
   end
 
   def handle_event("change_character_form", %{"character_form" => character_form} = params, socket) do
@@ -166,13 +168,14 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
     :timer.sleep(1000)
     if valid? do
       maybe_character = CharacterForm.convert_strings(character_form)
+      |> Map.merge(%{"session_id" => socket.assigns.session_id})
       |> Character.create()
       |> IO.inspect
 
       case maybe_character do
         {:ok, %Character{id: character_id}} -> 
           IO.puts "character created successfully"
-          {:noreply, redirect(socket, to: "/party-tracker/character/" <> Integer.to_string(character_id))}
+          {:noreply, redirect(socket, to: "/party-tracker/session/#{socket.assigns.session_id}/character/#{Integer.to_string(character_id)}")}
         {:error, _} -> 
           {:noreply, 
           socket
