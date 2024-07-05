@@ -74,6 +74,14 @@ defmodule Doodlex.PartyTracker.Character do
     |> Repo.all()
   end
 
+  def get_by_session(session_id) do
+    from(c in Character,
+      where: c.session_id == ^session_id,
+      select: c
+    )
+    |> Repo.all()
+  end
+
   def update_hp(id, change) do
     case get(id) do
       %Character{} = character ->
