@@ -10,7 +10,7 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
 
   def render(assigns) do
     ~H"""
-      <main class="container my-8">
+    <div>
         <style>
           @scope {
             :scope {
@@ -43,13 +43,18 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
               .characters {
                 display: flex;
                 flex-wrap: wrap;
+                margin: 8px;
+                justify-content: center;
+                max-width:2200px;
+              }
+              .character-card-header {
+                display: flex;
+                justify-content: space-between;
               }
             }
           }
         </style>
-        <script>
-          const showPopover = () => document.getElementById("popover-menu").togglePopover()
-        </script>
+      <main class="container my-8">
          <section>
             <div class="session-header mb-4">
               <h3 class="mt-3"><%= @session.name %></h3>
@@ -62,27 +67,36 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
             </div>
             <p><%= @session.description %></p>
          </section>
-         <section>
-          <div class="characters">
-          <%= for character <- @characters do %>
-            <article class="character-card">
-              <header><b><%= "#{character.character_name} - #{character.character_heritage} #{character.character_class} #{character.character_level}" %></b></header>
-              <div class="flex justify-between"><p>AC: <%= character.character_ac |> Integer.to_string %></p> <p>CDC: <%= character.character_ac |> Integer.to_string %></p></div>
-              <div class="character-img-tray mb-2">
-                <img class="character_picture" src={character.character_picture}>
-              </div>
-                <.live_component 
-                  module={Components.Healthbar} 
-                  id={"#{character.id}-hp"} 
-                  current_hp={character.character_current_hp} 
-                  max_hp={character.character_max_hp} />   
-            </article>
-          <% end %>
-
-
-          </div>
-         </section>
       </main>
+      <div class="characters">
+      <%= for character <- @characters do %>
+        <article class="character-card">
+          <header class="character-card-header">
+            <div class="flex justify-center items-center">
+              <b><%= "#{character.character_name} - #{character.character_heritage} #{character.character_class} #{character.character_level}" %></b>
+            </div>
+            <details class="dropdown mb-0" id={"character-dropdown-#{character.id}"}>
+              <summary role="button" class="outline p-1">...</summary>
+              <ul style="transform: translateX(-75px);" onclick={"document.getElementById('character-dropdown-#{character.id}').open = false"}>
+                <li><a href={"/party-tracker/session/#{@session.id}/character/#{character.id}"}>Go to Character</a></li>
+                <li><a href={"/party-tracker/session/#{@session.id}/character/#{character.id}"}>Edit Character</a></li>
+                <li><a href="#" phx-click="toggle-hp-buttons" phx-value-id={character.id}>Toggle HP Buttons</a></li>
+              </ul>
+            </details>
+          </header>
+          <div class="flex justify-between"><p>AC: <%= character.character_ac |> Integer.to_string %></p> <p>CDC: <%= character.character_ac |> Integer.to_string %></p></div>
+          <div class="character-img-tray mb-2">
+            <img class="character_picture" src={character.character_picture}>
+          </div>
+            <.live_component 
+              module={Components.Healthbar} 
+              id={"#{character.id}-hp"} 
+              current_hp={character.character_current_hp} 
+              max_hp={character.character_max_hp} />   
+        </article>
+      <% end %>
+      </div>
+    </div>
     """
   end
 
@@ -106,11 +120,26 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
   end
 
   def handle_info(%{event: "update-character", payload: payload} = attrs, socket) do
-    IO.puts "--- HANDLE_INFO_SESSION_LIVE"
-    IO.inspect attrs
-    IO.inspect payload
+    payload_no_id = Map.delete(payload, :id)
+    character_id = payload.id
+    updates = Map.delete(payload, :id)
+    new_characters = Enum.map(socket.assigns.characters, fn character ->
+      if character.id == character_id do
+        Map.merge(character, updates)
+      else
+        character
+      end
+    end)
     {:noreply, 
-    socket }
-    #|> assign(character: Map.merge(socket.assigns.character, payload))}
+    socket
+    |> assign(characters: new_characters)}
+  end
+  def handle_event(event, params, socket) do
+    IO.puts "--- HANDLE_INFO_SESSION_LIVE"
+    IO.inspect event
+    IO.inspect params
+    
+    {:noreply, 
+    socket}
   end
 end

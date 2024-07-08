@@ -81,8 +81,8 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
 
     value = String.to_integer(value_str)
     character = socket.assigns.character
-    {:ok, %{character_current_hp: character_current_hp}} = Character.update_hp(character.id, value)
-    DoodlexWeb.Endpoint.broadcast_from(self(), "character:#{Integer.to_string(character.id)}", "update-character", %{character_current_hp: character_current_hp})
+    {:ok, %{character_current_hp: character_current_hp, id: id}} = Character.update_hp(character.id, value)
+    DoodlexWeb.Endpoint.broadcast_from(self(), "character:#{Integer.to_string(character.id)}", "update-character", %{character_current_hp: character_current_hp, id: id})
     {:noreply, 
       socket
       |> assign(character: Map.merge(socket.assigns.character, %{character_current_hp: character_current_hp}))
@@ -92,8 +92,9 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
   def handle_info(%{event: "update-character", payload: payload}, socket) do
     IO.puts "--- HANDLE_INFO"
     IO.inspect payload
+    payload_no_id = Map.delete(payload, :id)
     {:noreply, 
     socket 
-    |> assign(character: Map.merge(socket.assigns.character, payload))}
+    |> assign(character: Map.merge(socket.assigns.character, payload_no_id))}
   end
 end
