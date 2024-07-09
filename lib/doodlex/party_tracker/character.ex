@@ -15,9 +15,8 @@ defmodule Doodlex.PartyTracker.Character do
     field :character_max_hp, :integer
     field :character_current_hp, :integer
     field :character_ac, :integer
+    field :character_cdc, :integer
     field :session_id, :binary_id
-    # add class DC
-    # add session
 
     timestamps(type: :utc_datetime)
   end
@@ -33,6 +32,7 @@ defmodule Doodlex.PartyTracker.Character do
       :character_max_hp,
       :character_current_hp,
       :character_ac,
+      :character_cdc,
       :session_id
     ])
     |> validate_required([
@@ -44,6 +44,7 @@ defmodule Doodlex.PartyTracker.Character do
       :character_max_hp,
       :character_current_hp,
       :character_ac,
+      :character_cdc,
       :session_id
     ])
     |> unique_constraint(:character_name)
@@ -55,7 +56,7 @@ defmodule Doodlex.PartyTracker.Character do
     |> Repo.insert()
   end
 
-  def create(%{character_max_hp: character_max_hp} = attrs) do
+  def create(%{character_max_hp: _} = attrs) do
     map_with_strings =
       for {key, value} <- attrs do
         {Atom.to_string(key), value}
@@ -67,6 +68,17 @@ defmodule Doodlex.PartyTracker.Character do
   def get(id) do
     Character
     |> Repo.get(id)
+  end
+
+  def update(id, changes) do
+    case get(id) do
+      %Character{} = character ->
+        character
+        |> Character.changeset(changes)
+        |> Repo.update()
+      nil ->
+          {:error, "User not found"}
+      end
   end
 
   def all do 

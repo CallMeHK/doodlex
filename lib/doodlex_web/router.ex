@@ -68,13 +68,17 @@ defmodule DoodlexWeb.Router do
   scope "/", DoodlexWeb do
     pipe_through [:base, :base_layout_light] 
 
-    live "/party-tracker", PartyTrackerLive
-    live "/party-tracker/session/create", PartyTracker.CreateSessionLive
-    live "/party-tracker/session/join", PartyTrackerLive
-    live "/party-tracker/session/all", PartyTracker.AllSessionsLive
-    live "/party-tracker/session/:session_id", PartyTracker.SessionLive
-    live "/party-tracker/session/:session_id/character/create", PartyTracker.CreateCharacterLive
-    live "/party-tracker/session/:session_id/character/:id", PartyTracker.ViewCharacterLive
+    live_session :mount_current_user,
+      on_mount: [{DoodlexWeb.UserAuth, :mount_current_user}] do
+      live "/party-tracker", PartyTrackerLive
+      live "/party-tracker/session/create", PartyTracker.CreateSessionLive
+      live "/party-tracker/session/join", PartyTrackerLive
+      live "/party-tracker/session/all", PartyTracker.AllSessionsLive
+      live "/party-tracker/session/:session_id", PartyTracker.SessionLive
+      live "/party-tracker/session/:session_id/character/create", PartyTracker.CreateCharacterLive
+      live "/party-tracker/session/:session_id/character/:id", PartyTracker.ViewCharacterLive
+      live "/party-tracker/session/:session_id/character/:method/:id", PartyTracker.CreateCharacterLive
+    end
   end
 
   scope "/", DoodlexWeb do

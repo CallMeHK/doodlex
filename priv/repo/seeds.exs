@@ -14,9 +14,9 @@ alias Doodlex.Accounts
 alias Doodlex.PartyTracker.Session
 alias Doodlex.PartyTracker.Character
 
-Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: System.get_env("SU_PW")})
-Accounts.register_user(%{email: "yeet@gmail.com", password: System.get_env("USER_PW")})
-Accounts.register_user(%{email: "skeet@gmail.com", password: System.get_env("USER_PW")})
+Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: System.get_env("SU_PW") || "asdfasdfasdf"})
+Accounts.register_user(%{email: "yeet@gmail.com", password: System.get_env("USER_PW") || "asdfasdfasdf"})
+Accounts.register_user(%{email: "skeet@gmail.com", password: System.get_env("USER_PW") || "asdfasdfasdf"})
 
 {:ok, %{id: session_id}} = Session.create(%{name: "Test Session", description: "A description of a test campaign."})
 Session.create(%{name: "Blank Test Session", description: "A blank campaign"})
@@ -30,6 +30,7 @@ Character.create(%{
   character_max_hp: 35,
   character_current_hp: 25,
   character_ac: 19,
+  character_cdc: 16,
   session_id: session_id
 })
 
@@ -42,6 +43,7 @@ Character.create(%{
   character_max_hp: 30,
   character_current_hp: 30,
   character_ac: 18,
+  character_cdc: 17,
   session_id: session_id
 })
 
@@ -54,6 +56,7 @@ Character.create(%{
   character_max_hp: 25,
   character_current_hp: 25,
   character_ac: 19,
+  character_cdc: 16,
   session_id: session_id
 })
 
@@ -66,6 +69,7 @@ Character.create(%{
   character_max_hp: 32,
   character_current_hp: 8,
   character_ac: 18,
+  character_cdc: 17,
   session_id: session_id
 })
 
@@ -78,5 +82,6 @@ Character.create(%{
   character_max_hp: 43,
   character_current_hp: 15,
   character_ac: 17,
+  character_cdc: 19,
   session_id: session_id
 })

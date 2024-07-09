@@ -27,59 +27,57 @@ defmodule Doodlex.PartyTracker.Components.Healthbar do
 
     ~H"""
     <div>
-      <div>
-        <style>
-          @scope {
-            :scope {
-              .health-bar {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-                height: 75px;
-                padding: 5px;
-                background: #ddd;
-                -webkit-border-radius: 5px;
-                -moz-border-radius: 5px;
-                border-radius: 5px;
-                position: relative;
-              }
-              .bar {
-                <%= bar_color %>
-                <%= bar_width %>
-                height: 65px;
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                bottom: 0;
-                z-index: 20;
-                
-                transition: width .5s linear;
-              }
-              .hit {
-                background: #cca49f;
-                <%= bar_width %>
-                height: 65px;
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                bottom: 0;
-                z-index: 10;
-                
-                transition: width .5s ease-in-out .5s;
-              }
-              .hp {
-                position: absolute;
-                top: 5px;
-                right: 10px;
-                bottom: 0;
-                z-index: 30;
-                font-weight: bold;
-                font-size: 40px;
-              }
+      <style>
+        <%= "#heath-bar-#{@id} {"  %>
+            .health-bar {
+              -webkit-box-sizing: border-box;
+              -moz-box-sizing: border-box;
+              box-sizing: border-box;
+              width: 100%;
+              height: 75px;
+              padding: 5px;
+              background: #ddd;
+              -webkit-border-radius: 5px;
+              -moz-border-radius: 5px;
+              border-radius: 5px;
+              position: relative;
+            }
+            .bar {
+              <%= bar_color %>
+              <%= bar_width %>
+              height: 65px;
+              position: absolute;
+              top: 5px;
+              left: 5px;
+              bottom: 0;
+              z-index: 20;
+              
+              transition: width .5s linear;
+            }
+            .hit {
+              background: #cca49f;
+              <%= bar_width %>
+              height: 65px;
+              position: absolute;
+              top: 5px;
+              left: 5px;
+              bottom: 0;
+              z-index: 10;
+              
+              transition: width .5s ease-in-out .5s;
+            }
+            .hp {
+              position: absolute;
+              top: 5px;
+              right: 10px;
+              bottom: 0;
+              z-index: 30;
+              font-weight: bold;
+              font-size: 40px;
             }
           }
-        </style>
+      </style>
+      <div  id={"heath-bar-#{@id}"}>
         <div class="health-bar">
           <div id={"#{@id}-bar"} class="bar"></div>
           <div id={"#{@id}-hit"} class="hit"></div>

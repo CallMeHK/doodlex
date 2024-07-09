@@ -8,27 +8,29 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
 
   def render(assigns) do
     ~H"""
-      <main class="container my-8">
-        <style>
-          @scope {
-            :scope {
-              .character_picture {
-                width: 100%;
-              }
-              @media (max-width: 1281px) {
-                .card_container {
-                  grid-template-columns: none;
-                }
-              }
+      <div>
+      <style>
+        #view-char {
+          .character_picture {
+            width: 100%;
+          }
+          @media (max-width: 1281px) {
+            .card_container {
+              grid-template-columns: none;
             }
           }
-        </style>
+        }
+      </style>
+      <main id="view-char" class="container my-8">
+        <a href={"/party-tracker/session/#{@character.session_id}"}>Back to session</a>
          <section>
             <h2><%= @character[:character_name]%></h2>
          </section>
          <section>
           <div class="grid card_container">
-            <article><img class="character_picture" src={@character[:character_picture]}></article>
+            <article>
+              <img class="character_picture" src={@character[:character_picture]}>
+            </article>
             <article>
               <div>
                 <.live_component 
@@ -41,7 +43,7 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
               <div class="grid">
                 <p><strong><%= "Level #{@character[:character_level]} #{@character[:character_heritage]} #{@character[:character_class]}" %></strong></p>
                 <p><strong><%= "AC #{Integer.to_string(@character[:character_ac])}" %></strong></p>
-                <p><strong><%= "Class DC #{Integer.to_string(@character[:character_ac])}" %></strong></p>
+                <p><strong><%= "Class DC #{Integer.to_string(@character[:character_cdc])}" %></strong></p>
               </div>
               <div class="grid mt-6 mb-6 dmg-btn">
                 <button phx-click="update-hp" value="-1" style="background: #a60808;">1 Damage</button>
@@ -57,6 +59,7 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
           </div>
          </section>
       </main>
+      </div>
     <!-- Current temperature: <%= if @not_found, do: "Cant find character!", else: "Found character " <> @character[:character_name] %> -->
     """
   end

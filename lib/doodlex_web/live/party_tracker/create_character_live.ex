@@ -10,11 +10,16 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
     ~H"""
       <main class="container my-8">
          <section>
-            <h2>Create a Character</h2>
+            <h2><%= if @method == :edit, do: "Edit Character", else: "Create a Character" %></h2>
          </section>
          <section id="intro">
             <div class="md-section">
-              <.form  for={@form} id="character_form" phx-change="change_character_form" phx-submit="submit_character_form">
+              <.form  
+                for={@form} 
+                id="character_form" 
+                phx-change="change_character_form" 
+                phx-submit={if @method == :edit, do: "edit_character_form", else: "submit_character_form"}
+              >
                 <fieldset class='grid'>
                   <label>
                     Name
@@ -71,6 +76,13 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
                       field={@form[:character_ac]}
                     />
                   </label>
+                  <label>
+                    Class Save DC (CDC)
+                    <.finput
+                      type="number"
+                      field={@form[:character_cdc]}
+                    />
+                  </label>
                 </fieldset>
 
                 <%= if elem(@errors, 0) == :error do %>
@@ -79,7 +91,7 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
                 <input
                   id="character_form_submit"
                   type="submit"
-                  value="Create Character"
+                  value={if @method == :edit, do: "Save Changes", else: "Create Character"}
                 />
               </.form>
             </div>
@@ -100,16 +112,16 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
       field :character_level, :integer
       field :character_max_hp, :integer
       field :character_ac, :integer
-      # field :character_portrait, :string
+      field :character_cdc, :integer
     end
 
     def changeset(form, params \\ %{}) do
       form
       |> cast(params, [
-        :character_name, :character_class, :character_heritage, :character_picture, :character_level, :character_max_hp, :character_ac
+        :character_name, :character_class, :character_heritage, :character_picture, :character_level, :character_max_hp, :character_ac, :character_cdc
       ])
       |> validate_required([
-        :character_name, :character_class, :character_heritage, :character_picture, :character_level, :character_max_hp, :character_ac
+        :character_name, :character_class, :character_heritage, :character_picture, :character_level, :character_max_hp, :character_ac, :character_cdc
       ])
     end
 
@@ -118,13 +130,14 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
     end
 
     def convert_strings(form) do
-      %{"character_ac" => character_ac, "character_max_hp" =>  character_max_hp, "character_level" => character_level} = form
+      %{"character_cdc" => character_cdc, "character_ac" => character_ac, "character_max_hp" =>  character_max_hp, "character_level" => character_level} = form
+      c_cdc = ensure_int(character_cdc)
       c_ac = ensure_int(character_ac)
       c_max_hp = ensure_int(character_max_hp)
       c_level = ensure_int(character_level)
 
       Map.merge(form, %{
-        "character_ac" => c_ac, "character_max_hp" =>  c_max_hp, "character_level" => c_level
+        "character_cdc" => c_cdc, "character_ac" => c_ac, "character_max_hp" =>  c_max_hp, "character_level" => c_level
       })
     end
   end
@@ -133,7 +146,31 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
     assign(socket, :form, to_form(changeset))
   end
 
+  def mount(%{"method" => "edit"} = params, _session, socket) do
+    IO.puts "MOUNTED EDIT"
+    maybe_id = Map.get(params, "session_id")
+    maybe_character_id = Map.get(params, "id")
+
+    case {Session.get(maybe_id), Character.get(String.to_integer(maybe_character_id))} do
+      {%Session{id: id}, %Character{id: character_id} = character} ->
+        form_values = Map.take(character, [
+        :character_name, :character_class, :character_heritage, :character_picture, :character_level, :character_max_hp, :character_ac, :character_cdc
+      ])
+        {:ok, 
+          socket
+          |> assign(:errors, {:no_submit, ""})
+          |> assign(:session_id, id)
+          |> assign(:method, :edit)
+          |> assign(:character_id, character_id)
+          |> assign_form(CharacterForm.changeset(%CharacterForm{} |> Map.merge(form_values)))
+        }
+      _ -> 
+        {:noreply, redirect(socket, to: "/party-tracker")}
+    end
+  end
+
   def mount(params, _session, socket) do
+    IO.puts "MOUNTED"
     maybe_id = Map.get(params, "session_id")
 
     case Session.get(maybe_id) do
@@ -142,6 +179,7 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
           socket
           |> assign(:errors, {:no_submit, ""})
           |> assign(:session_id, id)
+          |> assign(:method, :create)
           |> assign_form(CharacterForm.changeset(%CharacterForm{}))
         }
       _ -> 
@@ -165,7 +203,6 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
 
     valid? = socket.assigns.form.source.valid?
 
-    :timer.sleep(1000)
     if valid? do
       maybe_character = CharacterForm.convert_strings(character_form)
       |> Map.merge(%{"session_id" => socket.assigns.session_id})
@@ -175,6 +212,33 @@ defmodule DoodlexWeb.PartyTracker.CreateCharacterLive do
       case maybe_character do
         {:ok, %Character{id: character_id}} -> 
           IO.puts "character created successfully"
+          {:noreply, redirect(socket, to: "/party-tracker/session/#{socket.assigns.session_id}/character/#{Integer.to_string(character_id)}")}
+        {:error, _} -> 
+          {:noreply, 
+          socket
+          |> assign(:errors, {:error, "Unable to create character at this time. Please try again."})}
+      end
+
+    else
+      {:noreply, 
+      socket
+      |> assign(:errors, {:error, "Must fill out all fields."})
+      }
+    end
+  end
+
+  def handle_event("edit_character_form", %{"character_form" => character_form}, socket) do
+    IO.inspect socket.assigns
+
+    valid? = socket.assigns.form.source.valid?
+
+    if valid? do
+      form = CharacterForm.convert_strings(character_form)
+      maybe_character = Character.update(socket.assigns.character_id, form) |> IO.inspect
+
+      case maybe_character do
+        {:ok, %Character{id: character_id}} -> 
+          IO.puts "character edited successfully"
           {:noreply, redirect(socket, to: "/party-tracker/session/#{socket.assigns.session_id}/character/#{Integer.to_string(character_id)}")}
         {:error, _} -> 
           {:noreply, 
