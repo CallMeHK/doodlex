@@ -81,6 +81,20 @@ defmodule Doodlex.PartyTracker.Character do
       end
   end
 
+  def delete(id) do
+    case get(id) do
+      %Character{} = character ->
+        case Repo.delete(character) do
+          {:ok, _struct} ->
+            {:ok, "Character deleted successfully"}
+          {:error, reason} ->
+            {:error, reason}
+        end
+      nil ->
+          {:error, "Character not found"}
+      end
+  end
+
   def all do 
     from(t in Character, select: t)
     |> Repo.all()

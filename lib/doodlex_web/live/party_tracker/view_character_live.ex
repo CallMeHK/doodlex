@@ -5,12 +5,18 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
   import DoodlexWeb.CoreComponents
   alias Doodlex.PartyTracker.Character
   alias Doodlex.PartyTracker.Components
+  alias Phoenix.LiveView.JS
+  use DoodlexWeb, :verified_routes
 
   def render(assigns) do
     ~H"""
       <div>
       <style>
         #view-char {
+          .char-header {
+            display: flex;
+            justify-content: space-between;
+          }
           .character_picture {
             width: 100%;
           }
@@ -24,11 +30,19 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
       <main id="view-char" class="container my-8">
         <a href={"/party-tracker/session/#{@character.session_id}"}>Back to session</a>
          <section>
-            <h2><%= @character[:character_name]%></h2>
+            <div class="char-header mb-4">
+              <h2 class="mt-3"><%= @character[:character_name]%></h2>
+              <details class="dropdown mb-0">
+                <summary role="button" class="outline"><img src={~p"/images/wrench.svg"} width="32px" height="32px"></summary>
+                <ul style="transform: translateX(-75px);">
+                  <li><a href={"javascript:void(0)"} phx-click={JS.set_attribute({"open", "true"}, to: "#delete-character-modal")} phx-value-delete_modal="open">Delete Character</a></li>
+                </ul>
+              </details>
+            </div>
          </section>
          <section>
           <div class="grid card_container">
-            <article>
+            <article phx-click="tester">
               <img class="character_picture" src={@character[:character_picture]}>
             </article>
             <article>
@@ -58,6 +72,23 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
             </article>
           </div>
          </section>
+         <dialog id="delete-character-modal">
+          <article>
+            <header>
+              <button aria-label="Close" rel="prev" phx-click={JS.remove_attribute("open", to: "#delete-character-modal")}></button>
+              <p>
+                <strong>Permanently Delete <%= @character[:character_name]%>?</strong>
+              </p>
+            </header>
+            <p>
+              Are you sure?
+            </p>
+            <div class="grid">
+              <button style="background:red" phx-click="delete-character">Delete Character</button>
+              <button  phx-click={JS.remove_attribute("open", to: "#delete-character-modal")}>Cancel</button>
+            </div>
+          </article>
+        </dialog>
       </main>
       </div>
     <!-- Current temperature: <%= if @not_found, do: "Cant find character!", else: "Found character " <> @character[:character_name] %> -->
@@ -79,9 +110,17 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
     end
   end
 
-  def handle_event("update-hp", %{"value" => value_str} = params, socket) do
-    IO.inspect params
+  def handle_event("delete-character", _params, socket) do
+    character_id = socket.assigns.character.id
+    session_id = socket.assigns.character.session_id
 
+    case Character.delete(character_id) do
+       {:ok, _} -> {:noreply, push_navigate(socket, to: "/party-tracker/session/#{session_id}")}
+      _ -> {:noreply, socket}
+    end
+  end
+
+  def handle_event("update-hp", %{"value" => value_str} = params, socket) do
     value = String.to_integer(value_str)
     character = socket.assigns.character
     {:ok, %{character_current_hp: character_current_hp, id: id}} = Character.update_hp(character.id, value)
@@ -93,11 +132,19 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
   end
 
   def handle_info(%{event: "update-character", payload: payload}, socket) do
-    IO.puts "--- HANDLE_INFO"
-    IO.inspect payload
     payload_no_id = Map.delete(payload, :id)
     {:noreply, 
     socket 
     |> assign(character: Map.merge(socket.assigns.character, payload_no_id))}
+  end
+
+  def handle_event(event, params, socket) do
+    IO.puts "-------------- FALLBACK EVENT"
+    IO.inspect(event)
+    IO.inspect(params)
+    IO.inspect(socket.assigns)
+    {:noreply, 
+      socket
+    }
   end
 end

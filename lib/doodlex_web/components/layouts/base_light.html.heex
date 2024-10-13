@@ -10,6 +10,11 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link phx-track-static rel="stylesheet" href={~p"/assets/utilities.css"} />
+    <style>
+      * {
+        touch-action: manipulation;
+      }
+    </style>
   </head>
   <body>
     <.top_nav current_user={@current_user} logo={~p"/images/beer-mug-icon.svg"} title={"party tracker"} href={"/party-tracker"}/>
