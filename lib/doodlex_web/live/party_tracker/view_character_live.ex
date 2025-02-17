@@ -35,6 +35,7 @@ defmodule DoodlexWeb.PartyTracker.ViewCharacterLive do
               <details class="dropdown mb-0">
                 <summary role="button" class="outline"><img src={~p"/images/wrench.svg"} width="32px" height="32px"></summary>
                 <ul style="transform: translateX(-75px);">
+                  <li><a href={"/party-tracker/session/#{@character.session_id}/character/edit/#{@character.id}"}>Edit Character</a></li>
                   <li><a href={"javascript:void(0)"} phx-click={JS.set_attribute({"open", "true"}, to: "#delete-character-modal")} phx-value-delete_modal="open">Delete Character</a></li>
                 </ul>
               </details>

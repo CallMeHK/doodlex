@@ -10,14 +10,15 @@ defmodule Doodlex.PartyTracker.Session do
   schema "sessions" do
     field :name, :string
     field :description, :string
+    field :alias, :string
 
     timestamps(type: :utc_datetime)
   end
 
   def changeset(form, params \\ %{}) do
     form
-    |> cast(params, [:name, :description])
-    |> validate_required([:name, :description])
+    |> cast(params, [:name, :description, :alias])
+    |> validate_required([:name, :description, :alias])
   end
 
   def create(attrs) do
@@ -30,6 +31,11 @@ defmodule Doodlex.PartyTracker.Session do
     Session
     |> Repo.get(id)
   end
+
+  def get_by_alias(alias) do
+    Repo.get_by(Session, alias: alias)
+  end
+
 
   def all do
     from(s in Session, select: s)

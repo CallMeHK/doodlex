@@ -84,6 +84,10 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
                 <summary role="button" class="outline"><img src={~p"/images/wrench.svg"} width="32px" height="32px"></summary>
                 <ul style="transform: translateX(-75px);">
                   <li><a href={"/party-tracker/session/#{@session.id}/character/create"}>Create Character</a></li>
+                  <%= if @is_super do %>
+                    <li><a href={"/party-tracker/session/#{@session.id}/edit"}>Edit Session</a></li>
+                  <% end %>
+                  <li><a href={"/party-tracker/session/#{@session.id}"}>Alias: <%= @session.alias %></a></li>
                 </ul>
               </details>
             </div>
@@ -137,6 +141,14 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
     """
   end
 
+  defp is_super(socket) do
+    is_super = if socket.assigns.current_user == nil do
+      false
+    else
+      socket.assigns.current_user.super_user
+    end
+  end
+
   def mount(%{"session_id" => id}, _session, socket) do
     DoodlexWeb.Endpoint.subscribe("session:#{id}")
     maybe_session = Session.get(id)
@@ -150,6 +162,7 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
           socket
           |> assign(session: session, not_found: false )
           |> assign(characters: characters)
+          |> assign(is_super: is_super(socket))
           |> assign(show_hp_btns: [])
         }
       nil ->

@@ -18,8 +18,8 @@ Accounts.register_super_user(%{email: "hkrazy888@gmail.com", password: System.ge
 Accounts.register_user(%{email: "yeet@gmail.com", password: System.get_env("USER_PW") || "asdfasdfasdf"})
 Accounts.register_user(%{email: "skeet@gmail.com", password: System.get_env("USER_PW") || "asdfasdfasdf"})
 
-{:ok, %{id: session_id}} = Session.create(%{name: "Test Session", description: "A description of a test campaign."})
-Session.create(%{name: "Blank Test Session", description: "A blank campaign"})
+{:ok, %{id: session_id}} = Session.create(%{name: "Test Session", description: "A description of a test campaign.", alias: "test_alias"})
+Session.create(%{name: "Blank Test Session", description: "A blank campaign", alias: "test_alias_blank"})
 
 Character.create(%{
   character_name: "Gimli",
