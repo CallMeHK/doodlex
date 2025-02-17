@@ -137,6 +137,12 @@ defmodule DoodlexWeb.PartyTracker.SessionLive do
       <% end %>
       </div>
     </div>
+    <script>
+      localStorage.setItem("recentSession", JSON.stringify({
+        id: "<%= @session.id %>",
+        name: "<%= @session.name %>",
+      }))
+    </script>
     </div>
     """
   end

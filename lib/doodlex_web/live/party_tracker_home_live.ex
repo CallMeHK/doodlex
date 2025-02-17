@@ -10,6 +10,24 @@ defmodule DoodlexWeb.PartyTrackerLive do
       <main class="container my-8">
          <section id="intro">
             <div class="md-section">
+              <div id="recent-session" phx-update="ignore"></div>
+
+              <script>
+                const recentSession = localStorage.getItem("recentSession")
+
+                if (recentSession) {
+                  const { id, name } = JSON.parse(recentSession) || {}
+
+                  if (id && name) {
+                    document.querySelector('#recent-session').innerHTML = `
+                    <article>
+                      <h4>Recent Session</h4>
+                      <p><a href="/party-tracker/session/${id}">${name}</a></p>
+                    </article>
+                      `
+                  }
+                }
+              </script>
               <p><strong>party tracker</strong> is an interactive, real time application for tracking your fellow role playing gamers character status and metadata. Ask your DM for a link to your party's session, or enter your session's alias below.</p>
               
               <.form  for={@form} id="alias_form" phx-change="change_alias_form" phx-submit="submit_alias_form">
@@ -35,10 +53,11 @@ defmodule DoodlexWeb.PartyTrackerLive do
               </.form>
 
               <%= if @is_super do %>
-              <p><a href="/party-tracker/create-character">Create a character</a></p>
-              <p><a href="/party-tracker/session/create">Create a session</a></p>
-              <p><a href="/party-tracker/join-session">Join a session</a></p>
-              <p><a href="/party-tracker/session/all">All Sessions</a></p>
+                <h4>Quick links</h4>
+                <p><a href="/party-tracker/create-character">Create a character</a></p>
+                <p><a href="/party-tracker/session/create">Create a session</a></p>
+                <p><a href="/party-tracker/join-session">Join a session</a></p>
+                <p><a href="/party-tracker/session/all">All Sessions</a></p>
               <% end %>
             </div>
          </section>
